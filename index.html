@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zero Glitch Theme Switcher · Pixel Grid UI</title>
+    <meta name="description" content="Dark mode the right way — zero flash, zero glitch. CSS variables, light-dark(), data-theme override, inline-script fix. Zero frameworks." />
+
+    <!-- ──────────────────────────────────────────────────────────────
+         RULE 1 · THE INLINE SCRIPT IN <head>
+         ──────────────────────────────────────────────────────────────
+         5 lines that prevent the flash-of-wrong-theme on every reload.
+         Reads localStorage, falls back to prefers-color-scheme,
+         sets data-theme on <html> BEFORE the body parses.
+         Runs synchronously · blocks render for microseconds · no flash.
+
+         Why it works:
+           - Located inline in <head>, parsed before any of <body>
+           - Sets the attribute on <html>, so styles cascade correctly
+             from the very first paint
+           - Reads localStorage (the user's saved choice) OR falls back
+             to the OS preference if nothing's saved (RULE 4 below)
+
+         Why most tutorials get this wrong: they put this logic in
+         the main JS bundle, which loads AFTER body renders. By then
+         the page has already painted in the default (light) theme.
+    ────────────────────────────────────────────────────────────────── -->
+    <script>
+      (() => {
+        const saved = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = saved ?? (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+
+      <!-- ─── header · brand + theme toggle ─── -->
+      <header class="top">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <span class="brand-name">Zero Glitch Theme Switcher</span>
+        </div>
+
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1"  x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1"  y1="12" x2="3"  y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+          <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </header>
+
+      <!-- ─── hero ─── -->
+      <section class="hero">
+        <p class="eyebrow">DARK MODE · DONE RIGHT</p>
+        <h1 class="hero-title">A complete reference implementation.</h1>
+        <p class="hero-sub">
+          Click the toggle. Reload. No flash. Resize. Open DevTools, change the
+          OS theme. Everything updates. <strong>This is the whole system.</strong>
+        </p>
+      </section>
+
+      <!-- ─── stats ─── -->
+      <section class="stats">
+        <article class="card">
+          <div class="card-tag">LINES OF JS</div>
+          <div class="card-num">5</div>
+          <div class="card-trend down">−98% vs typical hook</div>
+        </article>
+        <article class="card">
+          <div class="card-tag">FRAMEWORKS</div>
+          <div class="card-num">0</div>
+          <div class="card-trend stable">stays that way</div>
+        </article>
+        <article class="card">
+          <div class="card-tag">FLASH ON RELOAD</div>
+          <div class="card-num">0<span class="card-unit">ms</span></div>
+          <div class="card-trend down">eliminated</div>
+        </article>
+      </section>
+
+      <!-- ─── components panel · proves the tokens scale ─── -->
+      <section class="panel">
+        <header class="panel-head">
+          <h2 class="panel-title">Components</h2>
+          <p class="panel-sub">Every element uses semantic tokens. Toggle the theme — watch everything follow.</p>
+        </header>
+
+        <div class="panel-row">
+          <div class="panel-cell">
+            <div class="cell-label">BUTTONS</div>
+            <div class="btn-row">
+              <button class="btn btn-primary">Continue</button>
+              <button class="btn btn-secondary">Cancel</button>
+              <button class="btn btn-ghost">Skip</button>
+            </div>
+          </div>
+          <div class="panel-cell">
+            <div class="cell-label">BADGES</div>
+            <div class="badge-row">
+              <span class="badge badge-accent">new</span>
+              <span class="badge badge-success">shipped</span>
+              <span class="badge badge-warn">draft</span>
+              <span class="badge badge-muted">archived</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-row">
+          <div class="panel-cell">
+            <div class="cell-label">FORM</div>
+            <form class="form" onsubmit="event.preventDefault()">
+              <label class="field">
+                <span class="field-label">Email</span>
+                <input class="input" type="email" placeholder="dev@acme.app" />
+              </label>
+              <label class="field">
+                <span class="field-label">Plan</span>
+                <select class="input">
+                  <option>Free</option>
+                  <option>Pro</option>
+                  <option>Enterprise</option>
+                </select>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" checked />
+                <span>Send me the monthly digest</span>
+              </label>
+            </form>
+          </div>
+          <div class="panel-cell">
+            <div class="cell-label">ALERTS</div>
+            <div class="alert-stack">
+              <div class="alert alert-info">
+                <strong>Heads up.</strong> Forced-colors mode is handled separately. See <code>styles.css</code>.
+              </div>
+              <div class="alert alert-success">
+                <strong>Shipped.</strong> The theme persists across reloads via <code>localStorage</code>.
+              </div>
+              <div class="alert alert-warn">
+                <strong>Don't forget.</strong> <code>light-dark()</code> needs <code>color-scheme</code> set.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── recent activity ─── -->
+      <section class="panel">
+        <header class="panel-head">
+          <h2 class="panel-title">Recent activity</h2>
+        </header>
+        <ul class="activity">
+          <li><span class="dot"></span>Pushed <code>v2.4.1</code> to production · 12m ago</li>
+          <li><span class="dot"></span>3 new signups from europe · 1h ago</li>
+          <li><span class="dot"></span>Resolved incident <code>INC-204</code> · 4h ago</li>
+        </ul>
+      </section>
+
+      <!-- ─── footer · the system summary ─── -->
+      <footer class="foot">
+        <div class="foot-rule">
+          <strong>That's the system.</strong>
+          <code>:root</code> tokens · <code>light-dark()</code> values · <code>[data-theme]</code> override · inline script in <code>&lt;head&gt;</code> · 5 lines of JS for persistence.
+        </div>
+        <div class="foot-meta">
+          Companion code for the Pixel Grid UI video <em>"Dark mode the right way: CSS variables + a tiny bit of JS."</em>
+          Open every file. Read every line. Nothing hidden.
+        </div>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/YT-PixelPerfectLabs/Youtube-Floating-Button/dist/script.js"></script>
+  </body>
+</html>

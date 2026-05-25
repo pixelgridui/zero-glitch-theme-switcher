@@ -1,0 +1,443 @@
+/* ────────────────────────────────────────────────────────────────
+   dark-mode-starter · styles.css
+   The complete theming system. Follows the 5 rules from the video.
+   ──────────────────────────────────────────────────────────────── */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+
+/* ────────────────────────────────────────────────────────────────
+   RULE 2 · SEMANTIC TOKENS ON :root  (NEVER --blue-500)
+   RULE 3 · light-dark() FOR VALUES   (one line · both modes)
+   RULE 4 · color-scheme: light dark  (REQUIRED for light-dark() to work)
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* color-scheme tells the browser this page supports both modes.
+     Without this, light-dark() falls back to the LIGHT value every time
+     AND native form controls (inputs, scrollbars, date pickers) won't
+     pick up the dark variant. (Gotcha #5 from the video.) */
+  color-scheme: light dark;
+
+  /* Semantic tokens — these are the names components reach for.
+     Background, text, accent, border. Never raw colors like --blue-500. */
+  --bg:       light-dark(#f5f0e8, #161311);
+  --surface:  light-dark(#ffffff, #1f1b18);
+  --raised:   light-dark(#fffdf7, #2a2520);
+  --text:     light-dark(#1a1510, #f0e8dc);
+  --muted:    light-dark(#534839, #9b8b78);
+  --accent:   light-dark(#e8410a, #ff6a3d);
+  --accent2:  light-dark(#1a6bff, #4ec0e0);
+  --success:  light-dark(#2a8c5a, #4ec07e);
+  --warn:     light-dark(#a86a14, #ffb56c);
+  --border:   light-dark(#d8cfc0, #3a322c);
+  --shadow:   light-dark(rgba(26,21,16,0.10), rgba(0,0,0,0.40));
+
+  /* Stable tokens (don't change with theme) */
+  --radius:   4px;
+  --motion:   180ms;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   RULE 1 (cont.) · [data-theme] MANUAL OVERRIDE
+   When the user toggles, we set data-theme on <html>, which trumps
+   the system preference. The light-dark() function reads color-scheme,
+   so we redeclare it to flip the resolution.
+   ──────────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f0e8;
+  --surface: #ffffff;
+  --raised: #fffdf7;
+  --text: #1a1510;
+  --muted: #534839;
+  --accent: #e8410a;
+  --accent2: #1a6bff;
+  --success: #2a8c5a;
+  --warn: #a86a14;
+  --border: #d8cfc0;
+  --shadow: rgba(26,21,16,0.10);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161311;
+  --surface: #1f1b18;
+  --raised: #2a2520;
+  --text: #f0e8dc;
+  --muted: #9b8b78;
+  --accent: #ff6a3d;
+  --accent2: #4ec0e0;
+  --success: #4ec07e;
+  --warn: #ffb56c;
+  --border: #3a322c;
+  --shadow: rgba(0,0,0,0.40);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   GOTCHA #4 from the video · DON'T ANIMATE COLOR across the page
+   The video says: a snap is fine, honest is fine; if you must transition,
+   transition the body background only. We do exactly that — short,
+   targeted, only on the swatch-bearing elements that benefit. No
+   page-wide opacity fades, no whole-screen color tweens.
+   ──────────────────────────────────────────────────────────────── */
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.45;
+  min-height: 100vh;
+  transition: background-color var(--motion) ease, color var(--motion) ease;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   GOTCHA #2 · forced-colors mode is NOT dark mode
+   It's a Windows / Linux high-contrast accessibility mode controlled
+   by the operating system. It overrides your colors with system colors.
+   You don't fight it — you let it through. Drop heavy shadows in this
+   mode so the user's OS colors aren't fighting visual noise.
+   ──────────────────────────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .card, .panel, .alert, .btn, .badge, .input, .theme-toggle {
+    box-shadow: none;
+    border-color: CanvasText;
+  }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   LAYOUT · the demo dashboard
+   ──────────────────────────────────────────────────────────────── */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 56px 80px;
+  display: grid;
+  gap: 40px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border: 3px solid var(--text);
+  transition: background-color var(--motion) ease, border-color var(--motion) ease;
+}
+.brand-name {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.theme-toggle {
+  width: 52px;
+  height: 52px;
+  background: var(--surface);
+  border: 3px solid var(--text);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  position: relative;
+  transition:
+    background-color var(--motion) ease,
+    border-color var(--motion) ease,
+    color var(--motion) ease,
+    transform 120ms ease;
+}
+.theme-toggle:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--text); }
+.theme-toggle:active { transform: translate(0,0); box-shadow: none; }
+.icon {
+  width: 24px; height: 24px;
+  fill: none; stroke: currentColor;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  position: absolute;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+:root[data-theme="light"] .icon-sun  { opacity: 0; transform: scale(0.6) rotate(-45deg); }
+:root[data-theme="light"] .icon-moon { opacity: 1; transform: scale(1)   rotate(0); }
+:root[data-theme="dark"]  .icon-sun  { opacity: 1; transform: scale(1)   rotate(0); }
+:root[data-theme="dark"]  .icon-moon { opacity: 0; transform: scale(0.6) rotate(45deg); }
+
+/* ─── hero ─── */
+.hero { display: grid; gap: 12px; max-width: 760px; }
+.eyebrow {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.hero-sub { font-size: 18px; color: var(--muted); }
+.hero-sub strong { color: var(--text); font-weight: 700; }
+
+/* ─── stats ─── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.card {
+  background: var(--surface);
+  border: 3px solid var(--text);
+  padding: 24px 26px;
+  display: grid;
+  gap: 8px;
+  box-shadow: 6px 6px 0 var(--text);
+}
+.card-tag {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.card-num {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.card-unit {
+  font-size: 24px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+.card-trend {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 700;
+}
+.card-trend.up      { color: var(--success); }
+.card-trend.down    { color: var(--accent); }
+.card-trend.stable  { color: var(--muted); }
+
+/* ─── panel ─── */
+.panel {
+  background: var(--surface);
+  border: 3px solid var(--text);
+  padding: 28px 32px;
+  display: grid;
+  gap: 24px;
+}
+.panel-head { display: grid; gap: 6px; }
+.panel-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.panel-sub { font-size: 15px; color: var(--muted); }
+.panel-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.panel-cell { display: grid; gap: 12px; }
+.cell-label {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+/* ─── buttons ─── */
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border: 2px solid var(--text);
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+.btn:hover { transform: translate(-1px, -1px); }
+.btn:active { transform: translate(0, 0); }
+.btn-primary {
+  background: var(--text);
+  color: var(--surface);
+}
+.btn-secondary {
+  background: var(--raised);
+  color: var(--text);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+/* ─── badges ─── */
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.badge {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border: 2px solid currentColor;
+  text-transform: uppercase;
+}
+.badge-accent  { color: var(--accent); }
+.badge-success { color: var(--success); }
+.badge-warn    { color: var(--warn); }
+.badge-muted   { color: var(--muted); }
+
+/* ─── form ─── */
+.form { display: grid; gap: 14px; }
+.field { display: grid; gap: 6px; }
+.field-label {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.input {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 16px;
+  padding: 10px 14px;
+  background: var(--raised);
+  color: var(--text);
+  border: 2px solid var(--border);
+  outline: none;
+  transition: border-color 100ms ease;
+}
+.input:focus { border-color: var(--accent); }
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+}
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+/* ─── alerts ─── */
+.alert-stack { display: grid; gap: 10px; }
+.alert {
+  padding: 12px 16px;
+  border-left: 4px solid currentColor;
+  background: var(--raised);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.45;
+}
+.alert strong { color: currentColor; font-weight: 700; margin-right: 4px; }
+.alert code {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  padding: 1px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.alert-info    { color: var(--accent2); }
+.alert-success { color: var(--success); }
+.alert-warn    { color: var(--warn); }
+
+/* ─── activity list ─── */
+.activity {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.activity li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text);
+}
+.activity .dot {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.activity code {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 13px;
+  padding: 2px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ─── footer ─── */
+.foot {
+  display: grid;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--border);
+}
+.foot-rule {
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1.55;
+}
+.foot-rule strong {
+  color: var(--accent);
+  font-weight: 800;
+  margin-right: 8px;
+}
+.foot-rule code {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 14px;
+  padding: 2px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.foot-meta { font-size: 14px; color: var(--muted); }
+.foot-meta em {
+  font-family: "Instrument Serif", "Georgia", serif;
+  font-style: italic;
+  color: var(--text);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   GOTCHA #3 · TEST CONTRAST IN BOTH THEMES
+   These tokens above ship at WCAG AA contrast (4.5:1 minimum for body
+   text). When you change a color, RECHECK in both themes — accent
+   colors especially can drop below 4.5:1 on dark backgrounds without
+   you noticing. Run the contrast checker in DevTools. Both modes.
+   Every time.
+   ──────────────────────────────────────────────────────────────── */
+
+
+/* ────────────────────────────────────────────────────────────────
+   Mobile · keep the demo readable on phones
+   ──────────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .app { padding: 32px 24px 56px; gap: 28px; }
+  .stats { grid-template-columns: 1fr; }
+  .panel-row { grid-template-columns: 1fr; gap: 20px; }
+  .hero-title { font-size: 36px; }
+  .card-num { font-size: 44px; }
+}
