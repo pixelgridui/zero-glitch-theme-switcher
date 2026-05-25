@@ -162,7 +162,7 @@ Built for the [Pixel Grid UI](https://www.youtube.com/@pixelgridui) long-form vi
 
 **Follow:**
 - YouTube → [@pixelgridui](https://www.youtube.com/@pixelgridui)
-- Instagram → [@pixel.grid.ui](https://instagram.com/pixel.grid.ui)
+- Instagram → [@pixel.grid.ui](https://instagram.com/pixelgridui)
 - Codepen → [@pixelgridui](https://codepen.io/pixelgridui)
 
 ## License
